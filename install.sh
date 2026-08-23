@@ -71,7 +71,10 @@ for dest in "${DESTS[@]}"; do
     echo "replacing symlink $dest -> $current"
     run rm "$dest"
   elif [[ -d "$dest" ]]; then
-    bak="${dest}.bak-${stamp}"
+    # Keep backups *outside* the skills dir so hosts do not load them as skills.
+    bak_root="$(dirname "$parent")/skill-backups"
+    run mkdir -p "$bak_root"
+    bak="$bak_root/$(basename "$dest").bak-${stamp}"
     echo "backing up $dest -> $bak"
     run mv "$dest" "$bak"
   elif [[ -e "$dest" ]]; then
