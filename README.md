@@ -79,7 +79,8 @@ pip install -e "${CONSTRUCTOR_RESILIENCE_HOME:-../constructor-resilience}[dev]"
 1. `coherence cache "theme"` or `coherence use <topic-id>`
 2. Load the **packet** as privileged context
 3. Mint only durable net-new claims (`coherence mint` or `add-atom`)
-4. Review pending atoms; rebuild the packet for handoff
+4. Review pending atoms; **back out** (`coherence reject` / `backout`) any atom that was ill-defined or does not actually constrain a possibility/impossibility
+5. Rebuild the packet for handoff
 
 Share `topics/<id>/atoms.json` + `packet.json` — not transcripts.
 

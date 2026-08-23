@@ -1,16 +1,16 @@
 ---
 name: constructor-resilience
 description: >
-  Agent coherence-cache: mint durable atoms with provenance, review them, build
-  resilient packets, and eval packets on arbitrary queries. Use when caching
-  research, handing off between sessions or agents, minting claims, reviewing
-  atoms, or measuring packet quality. Triggers on coherence cache, atoms, mint
-  atoms, review atoms, packet eval, constructor resilience, interest intersection.
+  Use when caching research, handing off between sessions or agents, minting
+  claims, reviewing or backing out atoms, measuring packet quality, or checking
+  whether a claim actually constrains a possibility or impossibility. Triggers
+  on coherence cache, atoms, mint atoms, review atoms, reject atom, back out
+  atom, retract atom, packet eval, constructor resilience, interest intersection.
 license: MIT
 compatibility: Requires Python 3.10+ and the constructor-resilience CLI (coherence) on PATH
 metadata:
   author: Rivlet
-  version: "0.1.0"
+  version: "0.1.1"
   homepage: https://github.com/rivletio/constructor-resilience-skill
   upstream: https://github.com/rivletio/constructor-resilience
 ---
@@ -23,6 +23,7 @@ Codex, Cursor, and any host that loads `SKILL.md`. Thin client of
 
 **Product framing:** share *interest surfaces*, not everything. Resume from *packets*.
 **Atom law:** *how* we mint matters — every minted claim carries provenance and starts **pending review**.
+**Constructor law:** an atom must actually constrain a *possibility* or an *impossibility*. If it was ill-defined, or later found not to create that constraint, **back it out**.
 
 ## Setup
 
@@ -88,6 +89,20 @@ coherence review --serve    # http://127.0.0.1:8765
 ```
 
 Accept / edit / reject. Rejected atoms stay for audit but leave packets.
+
+### Back out (headless)
+
+Use when an atom was not defined correctly, or was found **not** to create the possibility / impossibility it claimed. Do not delete — indices stay stable.
+
+```bash
+coherence reject 3 --reason "claimed impossibility does not hold"
+# alias:
+coherence backout 3 --reason "atom was not defined correctly"
+# restore if a later check confirms the constructor:
+coherence set-review 3 --status accepted --notes "constructor confirmed"
+```
+
+`reject` / `backout` rebuild `packet.json` when one exists. The record stays on disk for audit.
 
 ### Eval (arbitrary queries)
 
