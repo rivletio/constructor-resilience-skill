@@ -1,0 +1,19 @@
+{
+  "name": "constructor-resilience",
+  "version": "0.1.0",
+  "description": "Agent coherence-cache: mint durable atoms, review them, build resilient packets, eval packets on arbitrary queries",
+  "author": {
+    "name": "Rivlet",
+    "url": "https://github.com/rivletio"
+  },
+  "repository": "https://github.com/rivletio/constructor-resilience-skill",
+  "license": "MIT",
+  "keywords": [
+    "coherence",
+    "atoms",
+    "packets",
+    "interest-intersection",
+    "constructor-resilience",
+    "handoff"
+  ]
+}
