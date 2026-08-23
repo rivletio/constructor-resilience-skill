@@ -44,8 +44,6 @@ Store root:
 
 ```bash
 export COHERENCE_ROOT="${COHERENCE_ROOT:-$PWD/.coherence}"
-# Optional Ikonic vault:
-# export COHERENCE_ROOT="$HOME/.ikonic/vault/coherence"
 ```
 
 Default local model (MLX extra): **`mlx-community/Qwen3-8B-4bit`**.
