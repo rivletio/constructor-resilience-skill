@@ -50,10 +50,10 @@ the CLI exists.
 
 ## What the agent does
 
-1. Load prior work: `coherence cache "theme"` (or `use <topic-id>`), then read the **packet**.
-2. Add only durable new claims: `coherence ingest` or `add-atom`.
-3. Review; **back out** claims that do not actually constrain a possibility or impossibility.
-4. Rebuild the packet; `coherence share --to <id>` to hand it off.
+1. Resume: `coherence cache "theme"` and read the packet (if CACHE MISS, pack).
+2. Pack durable claims: `coherence pack --title "theme" --json claims.json`.
+3. Back out claims that do not actually constrain a possibility or impossibility.
+4. Hand off: `coherence share --to <id>`.
 
 Share `atoms.json` + `packet.json` (or `share.json`) — not the chat log.
 

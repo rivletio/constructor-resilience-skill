@@ -33,19 +33,19 @@ Store: `$COHERENCE_ROOT` or `$PWD/.coherence`.
 
 ## Protocol
 
-### Session start
+### Resume
 
-1. `coherence cache "theme"` or `coherence use <topic-id>`
-2. Read the **packet** before doing new work
-3. Only durable *net-new* claims become atoms
+`coherence cache "theme"` (or `use <topic-id>`). Read the **packet** before new work.
 
-### Digest (default)
+If that misses, pack claims (below) — do not stop at CACHE MISS.
 
-The model in this session writes the claims. Do not wait for MLX.
+### Pack (default)
+
+Write claims from this session. Do not wait for MLX.
 
 ```bash
-coherence ingest --json ./claims.json --auto-score
-# or:
+coherence pack --title "theme" --json ./claims.json
+# or one claim:
 coherence add-atom "Durable claim." --constraint fact --auto-score
 ```
 
@@ -66,7 +66,7 @@ coherence add-atom "Durable claim." --constraint fact --auto-score
 `constraint`: `possibility` | `impossibility` | `fact` | `decision`.  
 `mentions` / `refs`: optional names and citations on that claim.
 
-New atoms are `pending` unless `--accepted`.
+`pack` / `ingest` / `add-atom` keep claims. MLX `mint` starts `pending`. Pass `--pending` to queue a claim for review.
 
 ### Review / back out
 
@@ -77,11 +77,11 @@ coherence reject 3 --reason "claimed impossibility does not hold"
 
 Rejected atoms stay on disk for audit and drop out of packets. Indices stay stable.
 
-### Packet / handoff
+### Handoff
+
+`pack` already writes `packet.json`. To give it to someone:
 
 ```bash
-coherence search --greedy --max-size 6
-coherence packet --rebuild
 coherence share --to <id> --audience circle --forward none
 ```
 
