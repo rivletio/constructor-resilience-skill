@@ -7,7 +7,7 @@ description: >
   whether a claim still holds. Triggers: pack this session, digest this,
   handoff, share claims, coherence cache, atoms, ingest, mint, packet,
   constructor resilience, interest intersection.
-license: MIT
+license: AGPL-3.0-or-later
 compatibility: Requires Python 3.10+. First `bin/coherence` next to this file installs the CLI if needed.
 metadata:
   author: Rivlet

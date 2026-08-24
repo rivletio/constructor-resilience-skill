@@ -73,4 +73,4 @@ Protocol: [`skills/constructor-resilience/SKILL.md`](./skills/constructor-resili
 
 ## License
 
-MIT — see [LICENSE](./LICENSE).
+[AGPL-3.0-or-later](./LICENSE) — GNU Affero General Public License v3 or later.
