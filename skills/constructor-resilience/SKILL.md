@@ -102,9 +102,11 @@ coherence intersect <mine> <theirs> --query "…" --max-size 8
 Default mint model: `mlx-community/Qwen3-8B-4bit` (`COHERENCE_MLX_MODEL`).
 
 **Self-evaluation (built in):** `coherence mint` retries up to 3 times if the draft
-keeps too few grounded atoms or drops too many as ungrounded. The next try sees
-the dropped claims. A smaller model can still land a packet in a few tries.
-`--attempts N` overrides. Pack (no MLX) remains the any-machine path.
+keeps too few grounded atoms, drops too many as ungrounded, or emits meta /
+quoted-fragment atoms (`(paraphrasing…)`). The next try sees the dropped claims
+and is told to write stand-alone sentences. A smaller model can still land a
+packet in a few tries. `--attempts N` overrides. Pack (no MLX) remains the
+any-machine path.
 
 ## Circles
 
