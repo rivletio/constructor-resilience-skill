@@ -43,21 +43,21 @@ If that misses, pack — do not stop at CACHE MISS.
 
 Write stand-alone claims from this session. You extract the names; no extra NER model.
 
-For each claim: the sentence, a `constraint`, the **joins** it is about (`--mention` after that `--atom`), and a citation when there is one.
+For each claim: the sentence, a `constraint`, the **joins** it is about (`--mention` after that `--atom`), and a **locator** on each join (`--at`).
 
 ```bash
 coherence pack --title "theme" --constraint fact \
-  --atom "RWKV-7 has constant memory and constant time per token." \
-  --mention "RWKV-7:work" --mention "compressive state:concept" \
-  --atom "A second durable claim." \
-  --mention "Some Concept:concept"
+  --atom "ClaimParts attaches joins to the preceding atom." \
+  --mention "ClaimParts:concept" --at "src/coherence_cache/cli.py:358" \
+  --atom "Lex says a good conversation requires duration." \
+  --mention "Lex Fridman:person" --at "t=3033"
 ```
 
 `constraint`: `possibility` | `impossibility` | `fact` | `decision`.
 
-**Joins** (`person` | `org` | `work` | `place` | `concept` | `other`): names the claim is *about*, not every noun, not a second graph. Intersection keys on these. Acronym heuristics are a fallback — do not rely on them for concepts.
+**Joins** (`person` | `org` | `work` | `place` | `concept` | `other`): names the claim is *about*, not every noun, not a second graph. Pin where you saw the name: `--at file.py:42` / `file.py#L42-L48` (url is that path with `#L42`), `--at t=3033` or a YouTube URL with `&t=`, arXiv `page`+`paragraph`+`excerpt` on the atom `refs`. Intersection keys on the names. Acronym heuristics are a fallback.
 
-**Citations.** YouTube: `t` on the original video. arXiv: `page`, `paragraph`, and `excerpt` (`p.1 ¶N` + quote); `url` is the original PDF `#page=N`. Use `--json` only when a claim needs structured `refs`.
+**Atom citations.** YouTube: `t` on the original video. arXiv: `page`, `paragraph`, and `excerpt`; `url` is the original PDF `#page=N`. Use `--json` when a claim needs structured `refs`.
 
 Then `coherence share` if handing off.
 
