@@ -51,7 +51,7 @@ the CLI exists.
 ## What the agent does
 
 1. Resume: `coherence cache "theme"` and read the packet (if CACHE MISS, pack).
-2. Pack durable claims: `coherence pack --title "theme" --json claims.json`.
+2. Pack durable claims: `coherence pack --title "theme" --atom "Claim one." --atom "Claim two."`.
 3. Back out claims that do not actually constrain a possibility or impossibility.
 4. Hand off: `coherence share --to <id>`.
 

@@ -29,7 +29,7 @@ An atom must constrain a possibility, an impossibility, a fact, or a decision. N
 
 Use `coherence` on PATH. If missing, run `bin/coherence` next to this file (first run installs the CLI).
 
-Store: `$COHERENCE_ROOT` or `$PWD/.coherence`.
+Store: `$COHERENCE_ROOT` or `$PWD/.coherence`. Do **not** run `coherence review --serve --browser` unless the user asks (it can open Chrome).
 
 ## Protocol
 
@@ -37,58 +37,40 @@ Store: `$COHERENCE_ROOT` or `$PWD/.coherence`.
 
 `coherence cache "theme"` (or `use <topic-id>`). Read the **packet** before new work.
 
-If that misses, pack claims (below) — do not stop at CACHE MISS.
+If that misses, pack — do not stop at CACHE MISS.
 
 ### Pack (default)
 
-Write claims from this session. Do not wait for MLX.
+Write stand-alone claims from this session. Repeat `--atom`. No JSON file, no MLX.
 
 ```bash
-coherence pack --title "theme" --json ./claims.json
-# or one claim:
-coherence add-atom "Durable claim." --constraint fact --auto-score
+coherence pack --title "theme" --constraint fact \
+  --atom "One stand-alone sentence worth injecting later." \
+  --atom "A second durable claim."
 ```
 
-`claims.json`:
-
-```json
-{
-  "atoms": [
-    {
-      "text": "One stand-alone sentence worth injecting later.",
-      "constraint": "fact",
-      "mentions": [{"name": "JEPA", "kind": "concept"}]
-    }
-  ]
-}
-```
+Then `coherence share` if handing off.
 
 `constraint`: `possibility` | `impossibility` | `fact` | `decision`.  
-`mentions` / `refs`: optional names and citations on that claim.
+Optional per claim: pass JSON via `--json` if you need `mentions` / `refs`.
 
-`pack` / `ingest` / `add-atom` keep claims. MLX `mint` starts `pending`. Pass `--pending` to queue a claim for review.
+Duplicates are skipped. `pack` / `ingest` / `add-atom` keep claims. MLX `mint` starts `pending`. `--pending` queues review.
 
-### Review / back out
-
-Headless (do **not** open a browser unless the user asks):
+### Back out
 
 ```bash
 coherence reject 3 --reason "claimed impossibility does not hold"
 ```
 
-Human UI only if requested: `coherence review --serve --browser` (prints http://127.0.0.1:8765; default is no browser).
-
-Rejected atoms stay on disk for audit and drop out of packets. Indices stay stable.
+Rejected atoms stay on disk, drop out of packets. Indices stay stable.
 
 ### Handoff
-
-`pack` already writes `packet.json`. To give it to someone:
 
 ```bash
 coherence share --to <id> --audience circle --forward none
 ```
 
-Hand over `topics/<id>/atoms.json` + `packet.json`, or `share.json`.
+Give `topics/<id>/atoms.json` + `packet.json`, or `share.json`.
 
 ### Import / overlap
 
