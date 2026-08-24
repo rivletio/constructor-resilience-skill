@@ -52,7 +52,7 @@ coherence pack --title "theme" --constraint fact \
 Then `coherence share` if handing off.
 
 `constraint`: `possibility` | `impossibility` | `fact` | `decision`.  
-Optional per claim: pass JSON via `--json` if you need `mentions` / `refs`.
+Optional per claim: pass JSON via `--json` for `mentions` / `refs`. YouTube refs use `t` on the original video; arXiv refs use `page` on the original PDF (`https://arxiv.org/pdf/<id>#page=N`).
 
 Duplicates are skipped. `pack` / `ingest` / `add-atom` keep claims. MLX `mint` starts `pending`. `--pending` queues review.
 
