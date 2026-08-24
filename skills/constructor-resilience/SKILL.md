@@ -82,7 +82,7 @@ coherence check --packet /tmp/overlap.json
 ```
 
 1. **Observe** — packet sources and printed **challenges** (mine vs theirs, or one-sided).
-2. **Reason** — does mine still hold given theirs (and vice versa)? Support, tension, or contradiction? One-sided: still true without the other surface?
+2. **Reason** — does mine still hold given theirs (and vice versa)? `TENSION` = polarity conflict (treat as falsification, not corroboration). One-sided: still true without the other surface?
 3. **Experiment** — `coherence use` the originating topic, `reject` that `store_index` (or pack a revised claim that accounts for the other side), then re-run intersect/union.
 
 Repeat. Same FAIL twice → simpler experiment (one CLAIM). Stop only when check is all PASS **and** every remaining atom still looks true — including given the other surface.
