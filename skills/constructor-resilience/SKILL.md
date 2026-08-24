@@ -41,29 +41,25 @@ If that misses, pack — do not stop at CACHE MISS.
 
 ### Pack (default)
 
-Write stand-alone claims from this session. Repeat `--atom`. No JSON file, no MLX.
+Write stand-alone claims from this session. You extract the names; no extra NER model.
 
-```bash
-coherence pack --title "theme" --constraint fact \
-  --atom "One stand-alone sentence worth injecting later." \
-  --atom "A second durable claim."
-```
-
-Then `coherence share` if handing off.
-
-`constraint`: `possibility` | `impossibility` | `fact` | `decision`.
-
-**Joins.** While packing, extract the names the claim is *about* — not every noun, not a second entity graph. Hang them on that atom:
+For each claim: the sentence, a `constraint`, the **joins** it is about (`--mention` after that `--atom`), and a citation when there is one.
 
 ```bash
 coherence pack --title "theme" --constraint fact \
   --atom "RWKV-7 has constant memory and constant time per token." \
-  --mention "RWKV-7:work" --mention "compressive state:concept"
+  --mention "RWKV-7:work" --mention "compressive state:concept" \
+  --atom "A second durable claim." \
+  --mention "Some Concept:concept"
 ```
 
-Kinds: `concept` | `person` | `org` | `work` | `place` | `other`. Intersection uses these joins. Heuristic acronyms are a fallback only. A host NER model may propose spans; the claim stays the unit of meaning.
+`constraint`: `possibility` | `impossibility` | `fact` | `decision`.
 
-**Citations.** YouTube refs use `t` on the original video. arXiv refs use `page`, `paragraph`, and `excerpt` (`p.1 ¶N` + the quoted passage); `url` is the original PDF at `#page=N`. Pass JSON via `--json` when a claim needs structured `refs`.
+**Joins** (`person` | `org` | `work` | `place` | `concept` | `other`): names the claim is *about*, not every noun, not a second graph. Intersection keys on these. Acronym heuristics are a fallback — do not rely on them for concepts.
+
+**Citations.** YouTube: `t` on the original video. arXiv: `page`, `paragraph`, and `excerpt` (`p.1 ¶N` + quote); `url` is the original PDF `#page=N`. Use `--json` only when a claim needs structured `refs`.
+
+Then `coherence share` if handing off.
 
 Duplicates are skipped. `pack` / `ingest` / `add-atom` keep claims. MLX `mint` starts `pending`. `--pending` queues review.
 
