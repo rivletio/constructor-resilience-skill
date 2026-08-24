@@ -70,10 +70,13 @@ coherence add-atom "Durable claim." --constraint fact --auto-score
 
 ### Review / back out
 
+Headless (do **not** open a browser unless the user asks):
+
 ```bash
-coherence review --serve
 coherence reject 3 --reason "claimed impossibility does not hold"
 ```
+
+Human UI only if requested: `coherence review --serve --browser` (prints http://127.0.0.1:8765; default is no browser).
 
 Rejected atoms stay on disk for audit and drop out of packets. Indices stay stable.
 
