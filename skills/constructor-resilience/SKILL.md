@@ -3,15 +3,16 @@ name: constructor-resilience
 description: >
   Pack a session into durable claims and a small resume packet. Use when
   digesting research, handing off between agents, sharing what was decided
-  (not the transcript), attaching names and citations to claims, or checking
-  whether a claim still holds. Triggers: pack this session, digest this,
+  (not the transcript), attaching names and citations to claims, checking
+  whether a claim still holds, or overlapping two interest surfaces
+  (intersection or union). Triggers: pack this session, digest this,
   handoff, share claims, coherence cache, atoms, ingest, mint, packet,
-  constructor resilience, interest intersection.
+  constructor resilience, interest intersection, union, challenge atom.
 license: AGPL-3.0-or-later
 compatibility: Requires Python 3.10+. First `bin/coherence` next to this file installs the CLI if needed.
 metadata:
   author: Rivlet
-  version: "0.1.2"
+  version: "0.1.3"
   homepage: https://github.com/rivletio/constructor-resilience-skill
   upstream: https://github.com/rivletio/constructor-resilience
 when-to-use: >
@@ -64,15 +65,29 @@ Shell flags still work (`--atom` / `--mention` / `--at`) if you can quote them. 
 
 ### Loop until quality
 
-Do not share while a check FAILs or an atom would be false if read alone. Same loop internally (think it) and on disk (`coherence check`).
+Same loop for **pack**, **intersect**, and **union**. Do not share while a check FAILs or an atom would be false if read alone. Internally (think it) and on disk.
 
-1. **Observe** — `coherence check` (also printed by `pack`). Read every atom. Note FAIL indices *and* any claim that is a quote, a template, chat, or not from this session.
+**Pack**
+
+1. **Observe** — `coherence check` (also printed by `pack`). Note FAIL indices *and* any quote, template, chat, or claim not from this session.
 2. **Reason** — one sentence: missing join, bad locator, copied `<SLOT>`, quoted fragment, or does not constrain a possibility / impossibility / fact / decision.
 3. **Experiment** — `coherence reject N --reason "…"` then pack **one** replacement (draft or `--atom` / `--mention` / `--at`).
 
-Repeat. Same FAIL twice → simpler experiment (one CLAIM). Stop only when check is all PASS and every remaining atom still looks true.
+**Overlap** (`intersect` ∩ or `union` ∪)
 
-FAIL is mechanical: too short, chat, copied template, quoted fragment, missing constraint/mentions, file mention without a line, YouTube mention without `t=`, citation in the sentence without `refs`.
+```
+coherence intersect <mine> <theirs> --out /tmp/overlap.json
+coherence union <mine> <theirs> --out /tmp/union.json
+coherence check --packet /tmp/overlap.json
+```
+
+1. **Observe** — packet sources and printed **challenges** (mine vs theirs, or one-sided).
+2. **Reason** — does mine still hold given theirs (and vice versa)? Support, tension, or contradiction? One-sided: still true without the other surface?
+3. **Experiment** — `coherence use` the originating topic, `reject` that `store_index` (or pack a revised claim that accounts for the other side), then re-run intersect/union.
+
+Repeat. Same FAIL twice → simpler experiment (one CLAIM). Stop only when check is all PASS **and** every remaining atom still looks true — including given the other surface.
+
+FAIL is mechanical: too short, chat, copied template, quoted fragment, missing constraint/mentions, file mention without a line, YouTube mention without `t=`, citation in the sentence without `refs`. Overlap packets are strings: text FAILs plus challenges, not missing-constraint.
 
 Duplicates are skipped. `pack` / `ingest` / `add-atom` keep claims. MLX `mint` starts `pending`. `--pending` queues review.
 
@@ -96,8 +111,11 @@ Give `topics/<id>/atoms.json` + `packet.json`, or `share.json`.
 
 ```bash
 coherence import ./their-atoms.json --title "Their surface" --use
-coherence intersect <mine> <theirs> --query "…" --max-size 8
+coherence intersect <mine> <theirs> --query "…" --max-size 8 --out /tmp/overlap.json
+coherence check --packet /tmp/overlap.json
 ```
+
+`intersect --union` is the same as `union`. Then the loop above.
 
 ### Optional local MLX (Apple Silicon)
 

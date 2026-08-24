@@ -52,8 +52,9 @@ the CLI exists.
 
 1. Resume: `coherence cache "theme"` and read the packet (if CACHE MISS, pack).
 2. Pack durable claims: `coherence pack --title "theme" --atom "Claim one." --atom "Claim two."`.
-3. Back out claims that do not actually constrain a possibility or impossibility.
-4. Hand off: `coherence share --to <id>`.
+3. Loop until quality (observe / reason / experiment) on pack **and** on `intersect` / `union` — challenge whether an atom still holds given the other surface.
+4. Back out claims that do not actually constrain a possibility or impossibility.
+5. Hand off: `coherence share --to <id>`.
 
 Share `atoms.json` + `packet.json` (or `share.json`) — not the chat log.
 
