@@ -7,7 +7,7 @@
     "url": "https://github.com/rivletio"
   },
   "repository": "https://github.com/rivletio/constructor-resilience-skill",
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "keywords": [
     "coherence",
     "atoms",
