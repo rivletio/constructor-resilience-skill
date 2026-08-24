@@ -41,35 +41,38 @@ If that misses, pack — do not stop at CACHE MISS.
 
 ### Pack (default)
 
-Write stand-alone claims from this session. You extract the names; no extra NER model.
+Write stand-alone claims from **this session** (do not copy sample names or paths). You extract the names. Output **only** a labeled draft, then:
 
-For each claim: the sentence, a `constraint`, the **joins** it is about (`--mention` after that `--atom`), and a **locator** on each join (`--at`).
-
-```bash
-coherence pack --title "theme" --constraint fact \
-  --atom "ClaimParts attaches joins to the preceding atom." \
-  --mention "ClaimParts:concept" --at "src/coherence_cache/cli.py:358" \
-  --atom "Lex says a good conversation requires duration." \
-  --mention "Lex Fridman:person" --at "t=3033"
-```
-
-`constraint`: `possibility` | `impossibility` | `fact` | `decision`.
-
-**Joins** (`person` | `org` | `work` | `place` | `concept` | `other`): names the claim is *about*, not every noun, not a second graph. Pin where you saw the name: `--at file.py:42` / `file.py#L42-L48` (url is that path with `#L42`), `--at t=3033` or a YouTube URL with `&t=`, arXiv `page`+`paragraph`+`excerpt` on the atom `refs`. Intersection keys on the names. Acronym heuristics are a fallback.
-
-**Atom citations.** YouTube: `t` on the original video. arXiv: `page`, `paragraph`, and `excerpt`; `url` is the original PDF `#page=N`. Use `--json` when a claim needs structured `refs`.
-
-### Check (after every pack)
-
-`pack` prints a `check N/M PASS` report. Run `coherence check` if you packed earlier. **FAIL** is mechanical: too short, chat, missing constraint/mentions, file mention without a line, YouTube mention without `t=`, citation in the sentence without `refs`.
+`coherence pack --draft -`  (pipe the draft)  or  `coherence pack --draft /tmp/pack.txt`
 
 ```
-[2] FAIL missing mentions
-retry: coherence reject 2 --reason "check fail"
-then pack the replacement with --mention and --at
+TITLE: <THEME>
+CONSTRAINT: fact
+CLAIM: <SENTENCE>
+MENTION: <NAME:kind> @ <file.py:LINE or t=SECONDS>
+CLAIM: <SENTENCE>
+MENTION: <NAME:kind> @ t=3033
 ```
 
-At most two retries, then share. Conversation-only concepts need no `--at`; names from a file or video must have `--at`.
+Replace every `<SLOT>`. If a slot is still in angle brackets, that claim FAILs — rewrite from the session.
+
+`CONSTRAINT`: `possibility` | `impossibility` | `fact` | `decision`.
+
+**Joins** (`person` | `org` | `work` | `place` | `concept` | `other`): names the claim is *about*. `AT` / `@`: `file.py:12`, `t=3033`, or `p.1 ¶2`. Conversation-only concepts may omit AT. Never Python, never invent a JSON file, never reuse leftover example sentences.
+
+Shell flags still work (`--atom` / `--mention` / `--at`) if you can quote them. Draft is the small-model path.
+
+### Loop until quality
+
+Do not share while a check FAILs or an atom would be false if read alone. Same loop internally (think it) and on disk (`coherence check`).
+
+1. **Observe** — `coherence check` (also printed by `pack`). Read every atom. Note FAIL indices *and* any claim that is a quote, a template, chat, or not from this session.
+2. **Reason** — one sentence: missing join, bad locator, copied `<SLOT>`, quoted fragment, or does not constrain a possibility / impossibility / fact / decision.
+3. **Experiment** — `coherence reject N --reason "…"` then pack **one** replacement (draft or `--atom` / `--mention` / `--at`).
+
+Repeat. Same FAIL twice → simpler experiment (one CLAIM). Stop only when check is all PASS and every remaining atom still looks true.
+
+FAIL is mechanical: too short, chat, copied template, quoted fragment, missing constraint/mentions, file mention without a line, YouTube mention without `t=`, citation in the sentence without `refs`.
 
 Duplicates are skipped. `pack` / `ingest` / `add-atom` keep claims. MLX `mint` starts `pending`. `--pending` queues review.
 
