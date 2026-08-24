@@ -51,8 +51,19 @@ coherence pack --title "theme" --constraint fact \
 
 Then `coherence share` if handing off.
 
-`constraint`: `possibility` | `impossibility` | `fact` | `decision`.  
-Optional per claim: pass JSON via `--json` for `mentions` / `refs`. YouTube refs use `t` on the original video. arXiv refs use `page`, `paragraph`, and `excerpt` on the original article (`p.1 ¶N` + the quoted passage); `url` is the original PDF at `#page=N`.
+`constraint`: `possibility` | `impossibility` | `fact` | `decision`.
+
+**Joins.** While packing, extract the names the claim is *about* — not every noun, not a second entity graph. Hang them on that atom:
+
+```bash
+coherence pack --title "theme" --constraint fact \
+  --atom "RWKV-7 has constant memory and constant time per token." \
+  --mention "RWKV-7:work" --mention "compressive state:concept"
+```
+
+Kinds: `concept` | `person` | `org` | `work` | `place` | `other`. Intersection uses these joins. Heuristic acronyms are a fallback only. A host NER model may propose spans; the claim stays the unit of meaning.
+
+**Citations.** YouTube refs use `t` on the original video. arXiv refs use `page`, `paragraph`, and `excerpt` (`p.1 ¶N` + the quoted passage); `url` is the original PDF at `#page=N`. Pass JSON via `--json` when a claim needs structured `refs`.
 
 Duplicates are skipped. `pack` / `ingest` / `add-atom` keep claims. MLX `mint` starts `pending`. `--pending` queues review.
 
