@@ -1,7 +1,7 @@
 {
   "name": "constructor-resilience",
   "version": "0.1.2",
-  "description": "Digest sessions into durable claims, packets, and shareable interest surfaces",
+  "description": "Pack a session into durable claims and a small resume packet",
   "author": {
     "name": "Rivlet",
     "url": "https://github.com/rivletio"

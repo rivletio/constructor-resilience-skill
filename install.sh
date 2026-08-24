@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Install the agent skill *and* the coherence CLI so
-#   coherence cache "…"
-# works in the next chat with no extra steps.
+# Install the agent skill and the coherence CLI so
+#   pack this session
+# works in the next chat.
 set -euo pipefail
 
 usage() {
@@ -256,5 +256,6 @@ fi
 install_cli
 verify_cli
 echo
-echo "Done. Agents can run:  coherence cache \"theme\""
-echo "Store default: \$COHERENCE_ROOT or \$PWD/.coherence"
+echo "Done. Next: tell the agent  pack this session"
+echo "Store: \$COHERENCE_ROOT or \$PWD/.coherence"
+echo "CLI:   coherence cache \"theme\""

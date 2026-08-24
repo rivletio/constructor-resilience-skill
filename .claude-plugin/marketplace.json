@@ -5,14 +5,14 @@
     "url": "https://github.com/rivletio"
   },
   "metadata": {
-    "description": "Agent skill for constructor-resilience (Claude, Grok, Codex, Cursor)",
+    "description": "Pack sessions into durable claims and resume packets",
     "version": "0.1.2"
   },
   "plugins": [
     {
       "name": "constructor-resilience",
       "source": "./",
-      "description": "Agent coherence-cache: mint durable atoms, review them, build resilient packets, eval packets"
+      "description": "Pack a session into durable claims and a small resume packet"
     }
   ]
 }
