@@ -59,7 +59,17 @@ coherence pack --title "theme" --constraint fact \
 
 **Atom citations.** YouTube: `t` on the original video. arXiv: `page`, `paragraph`, and `excerpt`; `url` is the original PDF `#page=N`. Use `--json` when a claim needs structured `refs`.
 
-Then `coherence share` if handing off.
+### Check (after every pack)
+
+`pack` prints a `check N/M PASS` report. Run `coherence check` if you packed earlier. **FAIL** is mechanical: too short, chat, missing constraint/mentions, file mention without a line, YouTube mention without `t=`, citation in the sentence without `refs`.
+
+```
+[2] FAIL missing mentions
+retry: coherence reject 2 --reason "check fail"
+then pack the replacement with --mention and --at
+```
+
+At most two retries, then share. Conversation-only concepts need no `--at`; names from a file or video must have `--at`.
 
 Duplicates are skipped. `pack` / `ingest` / `add-atom` keep claims. MLX `mint` starts `pending`. `--pending` queues review.
 
@@ -89,6 +99,12 @@ coherence intersect <mine> <theirs> --query "…" --max-size 8
 ### Optional local MLX (Apple Silicon)
 
 `./install.sh --mlx`, then `coherence mint` / `critique` / `eval`. Skip if unavailable.
+Default mint model: `mlx-community/Qwen3-8B-4bit` (`COHERENCE_MLX_MODEL`).
+
+**Self-evaluation (built in):** `coherence mint` retries up to 3 times if the draft
+keeps too few grounded atoms or drops too many as ungrounded. The next try sees
+the dropped claims. A smaller model can still land a packet in a few tries.
+`--attempts N` overrides. Pack (no MLX) remains the any-machine path.
 
 ## Circles
 
