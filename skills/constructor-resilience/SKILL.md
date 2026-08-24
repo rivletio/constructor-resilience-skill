@@ -1,58 +1,40 @@
 ---
 name: constructor-resilience
 description: >
-  Use when caching research, handing off between sessions or agents, minting
-  claims, reviewing or backing out atoms, measuring packet quality, or checking
-  whether a claim actually constrains a possibility or impossibility. Triggers
-  on coherence cache, atoms, mint atoms, review atoms, reject atom, back out
-  atom, retract atom, packet eval, constructor resilience, interest intersection.
+  Digest a session into durable claims, pack what was decided, hand off
+  compressed findings (not transcripts), extract names and citations as
+  joins on those claims, or check whether a claim constrains a possibility
+  or impossibility. Use when caching research, packing this session,
+  minting/ingesting atoms, handing off between agents, sharing claims,
+  reviewing or backing out atoms, packet eval, or interest intersection.
+  Triggers on coherence cache, atoms, ingest, digest this, pack this
+  session, handoff, share claims, named entities, mint atoms, review
+  atoms, packet eval, constructor resilience, interest intersection.
 license: MIT
-compatibility: Requires Python 3.10+ and the constructor-resilience CLI (coherence) on PATH
+compatibility: Requires Python 3.10+. First `bin/coherence` bootstraps the CLI if needed.
 metadata:
   author: Rivlet
-  version: "0.1.1"
+  version: "0.1.2"
   homepage: https://github.com/rivletio/constructor-resilience-skill
   upstream: https://github.com/rivletio/constructor-resilience
+when-to-use: >
+  pack this session, digest this into claims, handoff, share what we
+  decided, cache this research, extract names and citations
 ---
 
 # Constructor Resilience
 
-Harness-agnostic [Agent Skill](https://agentskills.io) for Claude Code, Grok,
-Codex, Cursor, and any host that loads `SKILL.md`. Thin client of
+Harness-agnostic [Agent Skill](https://agentskills.io). Thin client of
 [`rivletio/constructor-resilience`](https://github.com/rivletio/constructor-resilience).
 
-**Product framing:** share *interest surfaces*, not everything. Resume from *packets*.
-**Atom law:** *how* we mint matters — every minted claim carries provenance and starts **pending review**.
-**Constructor law:** an atom must actually constrain a *possibility* or an *impossibility*. If it was ill-defined, or later found not to create that constraint, **back it out**.
+Share *interest surfaces*, not everything. Resume from *packets*.
+An atom must constrain a *possibility* or an *impossibility* (or record a fact/decision). Mentions and refs are **joins on the claim**, not a second graph.
 
 ## Setup
 
-Need `coherence` on PATH (alias `knowledge_ops`).
+Prefer `coherence` on PATH. If missing, run `bin/coherence` next to this file — it bootstraps the CLI. Store: `$COHERENCE_ROOT` or `$PWD/.coherence`.
 
-```bash
-python3 -m pip install "git+https://github.com/rivletio/constructor-resilience.git"
-# Apple Silicon local mint / critique / eval:
-# python3 -m pip install "git+https://github.com/rivletio/constructor-resilience.git#egg=constructor-resilience[mlx]"
-```
-
-If the Python package is already cloned (Rivlet products layout):
-
-```bash
-pip install -e "${CONSTRUCTOR_RESILIENCE_HOME:-../constructor-resilience}[dev]"
-```
-
-Store root:
-
-```bash
-export COHERENCE_ROOT="${COHERENCE_ROOT:-$PWD/.coherence}"
-# Optional vault-style host:
-# export COHERENCE_ROOT="${VAULT_ROOT}/coherence"
-```
-
-Default local model (MLX extra): **`mlx-community/Qwen3-8B-4bit`**.
-Override: `COHERENCE_MLX_MODEL=…`
-
-If MLX is unavailable, skip `mint` / `critique` / `eval --ensure-model` and use `add-atom` + `review` instead.
+Install (once): `npx skills add rivletio/constructor-resilience-skill` or `./install.sh` from the skill repo.
 
 ## Protocol
 
@@ -62,80 +44,72 @@ If MLX is unavailable, skip `mint` / `critique` / `eval --ensure-model` and use 
 2. Load **packet** as privileged context
 3. Continue; only durable net-new claims become atoms
 
-### Mint (HOW we make atoms)
+### Digest (default — this conversation's model)
+
+Write claims yourself. Do not wait for MLX.
 
 ```bash
-coherence ensure-model
-coherence mint --file ./notes.md --theme "…" --auto-score
-# atoms land as review.status=pending with model + source excerpt
+coherence ingest --json ./claims.json --auto-score
+# or:
+coherence add-atom "Durable claim." --constraint fact --auto-score
 ```
 
-Without MLX:
+`claims.json`:
 
-```bash
-coherence add-atom "Durable claim." --auto-score
+```json
+{
+  "atoms": [
+    {
+      "text": "One stand-alone sentence worth injecting later.",
+      "constraint": "fact",
+      "mentions": [{"name": "JEPA", "kind": "concept"}]
+    }
+  ]
+}
 ```
 
-### Critique (pre-human)
+`constraint` is `possibility` | `impossibility` | `fact` | `decision`.
+`mentions` / `refs` are optional joins (person, org, work, concept, citations). Do not invent a parallel entity store.
+
+Atoms land `review.status=pending` unless `--accepted`.
+
+### Review / back out
 
 ```bash
-coherence critique --source-file ./notes.md --apply
-```
-
-### Review (slick UI)
-
-```bash
-coherence review --serve    # http://127.0.0.1:8765
-```
-
-Accept / edit / reject. Rejected atoms stay for audit but leave packets.
-
-### Back out (headless)
-
-Use when an atom was not defined correctly, or was found **not** to create the possibility / impossibility it claimed. Do not delete — indices stay stable.
-
-```bash
+coherence review --serve
 coherence reject 3 --reason "claimed impossibility does not hold"
-# alias:
-coherence backout 3 --reason "atom was not defined correctly"
-# restore if a later check confirms the constructor:
-coherence set-review 3 --status accepted --notes "constructor confirmed"
 ```
 
-`reject` / `backout` rebuild `packet.json` when one exists. The record stays on disk for audit.
-
-### Eval (arbitrary queries)
-
-```bash
-coherence eval \
-  --query "What did we decide about X?" \
-  --query "How does Y relate to Z?" \
-  --ensure-model
-# → eval_report.json (grounded + coverage scores)
-```
+Rejected atoms stay for audit, leave packets. Indices stay stable.
 
 ### Packet / handoff
 
 ```bash
 coherence search --greedy --max-size 6
 coherence packet --rebuild
-# Share topics/<id>/atoms.json + packet.json
+coherence share --to <id> --audience circle --forward none
 ```
 
-### Interest intersection
+Share `topics/<id>/atoms.json` + `packet.json`, or the `share.json` envelope.
+
+### Import / intersect
 
 ```bash
-coherence intersect <mine-topic> <their-topic> --query "…" --max-size 8
+coherence import ./their-atoms.json --title "Their surface" --use
+coherence intersect <mine> <theirs> --query "…" --max-size 8
 ```
+
+### Optional local MLX (Apple Silicon)
+
+`./install.sh --mlx` then `coherence mint` / `critique` / `eval`. Skip if unavailable.
 
 ## Circles
 
-- Inner personal claims stay out of public topics unless intentional promote
-- Intersection only uses surfaces each party chose to expose
+Inner personal claims stay out of public topics unless intentional promote.
+Share is never ambient — use `coherence share`.
 
 ## Docs
 
-Upstream: [`SPEC.md`](https://github.com/rivletio/constructor-resilience/blob/main/SPEC.md),
-[`docs/HOSTS.md`](https://github.com/rivletio/constructor-resilience/blob/main/docs/HOSTS.md),
-[`docs/USER_MANUAL.md`](https://github.com/rivletio/constructor-resilience/blob/main/docs/USER_MANUAL.md),
-[`README.md`](https://github.com/rivletio/constructor-resilience/blob/main/README.md)
+Upstream: [SPEC.md](https://github.com/rivletio/constructor-resilience/blob/main/SPEC.md),
+[USER_MANUAL.md](https://github.com/rivletio/constructor-resilience/blob/main/docs/USER_MANUAL.md),
+[README.md](https://github.com/rivletio/constructor-resilience/blob/main/README.md)

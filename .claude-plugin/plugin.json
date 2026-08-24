@@ -1,7 +1,7 @@
 {
   "name": "constructor-resilience",
-  "version": "0.1.0",
-  "description": "Agent coherence-cache: mint durable atoms, review them, build resilient packets, eval packets on arbitrary queries",
+  "version": "0.1.2",
+  "description": "Digest sessions into durable claims, packets, and shareable interest surfaces",
   "author": {
     "name": "Rivlet",
     "url": "https://github.com/rivletio"

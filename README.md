@@ -10,9 +10,13 @@ that loads a `SKILL.md`. The skill is a thin client of the Python CLI
 
 **Product framing:** share *interest surfaces*, not everything. Resume from *packets*.
 
-## Install the skill
+## Install
 
-From this repo:
+```bash
+npx skills add rivletio/constructor-resilience-skill
+```
+
+Then say *pack this session* (or run `/constructor-resilience`). First `bin/coherence` next to `SKILL.md` bootstraps the CLI if PATH does not have `coherence` yet.
 
 ```bash
 git clone https://github.com/rivletio/constructor-resilience-skill.git
@@ -20,22 +24,25 @@ cd constructor-resilience-skill
 ./install.sh
 ```
 
-`install.sh` symlinks `skills/constructor-resilience` into:
+`./install.sh` does the full setup:
 
-| Host | User skill path |
-|------|-----------------|
-| Claude Code | `~/.claude/skills/constructor-resilience` |
-| Grok | `~/.grok/skills/constructor-resilience` |
-| Codex | `~/.codex/skills/constructor-resilience` |
-| Cross-runtime | `~/.agents/skills/constructor-resilience` |
+1. Symlinks the skill into Claude / Grok / Codex / Cursor / `~/.agents`
+2. Installs the pinned [`constructor-resilience`](https://github.com/rivletio/constructor-resilience) CLI into a venv and puts `coherence` on PATH (`~/.local/bin`)
 
-Project-local (this directory only):
+Then an agent can run `coherence cache "theme"` with no extra setup. Store default is `$COHERENCE_ROOT` or `$PWD/.coherence`.
 
-```bash
-./install.sh --project
-```
+Optional:
 
-Existing real directories are moved aside to `*.bak-<timestamp>` before linking.
+| Flag | What |
+|------|------|
+| `--project` | Link into `./.claude/skills` (etc.) of the current directory |
+| `--mlx` | Apple Silicon extra for `mint` / `critique` / `eval` |
+| `--skill-only` | Symlink the skill, skip the CLI |
+| `--from-git` | Ignore a sibling package clone; install the GitHub pin in `cli.lock` |
+
+If `../constructor-resilience` exists (Rivlet products layout), the CLI is an editable install of that clone.
+
+Existing real skill directories are moved aside to `*.bak-<timestamp>` before linking.
 
 ### Claude Code plugin
 
@@ -53,36 +60,17 @@ claude plugin marketplace add rivletio/constructor-resilience-skill
 claude plugin install constructor-resilience
 ```
 
-## Install the CLI
-
-The skill expects `coherence` on `PATH`:
-
-```bash
-python3 -m pip install "git+https://github.com/rivletio/constructor-resilience.git"
-export COHERENCE_ROOT="${COHERENCE_ROOT:-$PWD/.coherence}"
-```
-
-Apple Silicon mint / critique / eval (optional):
-
-```bash
-python3 -m pip install "git+https://github.com/rivletio/constructor-resilience.git#egg=constructor-resilience[mlx]"
-```
-
-If you already have the package clone (Rivlet products layout):
-
-```bash
-pip install -e "${CONSTRUCTOR_RESILIENCE_HOME:-../constructor-resilience}[dev]"
-```
+The plugin loads `SKILL.md`. You still want `./install.sh` so `coherence` is on PATH.
 
 ## What the agent does
 
 1. `coherence cache "theme"` or `coherence use <topic-id>`
 2. Load the **packet** as privileged context
-3. Mint only durable net-new claims (`coherence mint` or `add-atom`)
+3. Digest durable net-new claims with the host model (`coherence ingest` or `add-atom`). Mentions/refs are joins on the claim.
 4. Review pending atoms; **back out** (`coherence reject` / `backout`) any atom that was ill-defined or does not actually constrain a possibility/impossibility
-5. Rebuild the packet for handoff
+5. Rebuild the packet; `coherence share --to <id>` for an envelope
 
-Share `topics/<id>/atoms.json` + `packet.json` — not transcripts.
+Share `topics/<id>/atoms.json` + `packet.json` (or `share.json`) — not transcripts.
 
 See [`skills/constructor-resilience/SKILL.md`](./skills/constructor-resilience/SKILL.md)
 for the full protocol.
@@ -93,13 +81,15 @@ for the full protocol.
 .
 ├── README.md
 ├── LICENSE
-├── install.sh
+├── install.sh               # skill links + coherence CLI
+├── cli.lock                 # pinned constructor-resilience git ref
 ├── .claude-plugin/          # Claude Code plugin + marketplace
 │   ├── plugin.json
 │   └── marketplace.json
 └── skills/
     └── constructor-resilience/
-        └── SKILL.md         # Agent Skills entry (name matches folder)
+        ├── SKILL.md
+        └── bin/coherence    # fallback if PATH missed ~/.local/bin
 ```
 
 ## License

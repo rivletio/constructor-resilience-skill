@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# Wrapper next to SKILL.md. Bootstraps the CLI on first run if needed.
+set -euo pipefail
+HERE="$(cd "$(dirname "$0")" && pwd)"
+SKILL_DIR="$(cd "$HERE/.." && pwd)"
+PREFIX="${CONSTRUCTOR_RESILIENCE_VENV:-${XDG_DATA_HOME:-$HOME/.local/share}/constructor-resilience/venv}"
+BIN="$PREFIX/bin/coherence"
+USER_BIN="${CONSTRUCTOR_RESILIENCE_BIN:-$HOME/.local/bin}"
+
+bootstrap() {
+  echo "coherence CLI missing; bootstrapping..." >&2
+  local repo_root="" install_sh="" sibling=""
+  # skill repo: .../constructor-resilience-skill/skills/constructor-resilience
+  if [[ -f "$SKILL_DIR/../../install.sh" ]]; then
+    repo_root="$(cd "$SKILL_DIR/../.." && pwd)"
+    install_sh="$repo_root/install.sh"
+  elif [[ -f "$SKILL_DIR/../install.sh" ]]; then
+    repo_root="$(cd "$SKILL_DIR/.." && pwd)"
+    install_sh="$repo_root/install.sh"
+  fi
+  if [[ -n "$install_sh" ]]; then
+    bash "$install_sh" --user
+    return 0
+  fi
+
+  mkdir -p "$PREFIX" "$USER_BIN"
+  python3 -m venv "$PREFIX"
+  local pip="$PREFIX/bin/pip"
+  "$pip" install -U pip
+  sibling="$(cd "$SKILL_DIR/../../.." && pwd)/constructor-resilience"
+  if [[ -f "$sibling/pyproject.toml" ]]; then
+    echo "CLI: editable install from $sibling" >&2
+    "$pip" install -e "$sibling"
+  else
+    echo "CLI: pip install git+https://github.com/rivletio/constructor-resilience.git" >&2
+    "$pip" install "git+https://github.com/rivletio/constructor-resilience.git"
+  fi
+  ln -sfn "$BIN" "$USER_BIN/coherence"
+}
+
+if [[ ! -x "$BIN" ]]; then
+  bootstrap
+fi
+if [[ ! -x "$BIN" ]]; then
+  echo "failed to install coherence CLI" >&2
+  exit 127
+fi
+exec "$BIN" "$@"
