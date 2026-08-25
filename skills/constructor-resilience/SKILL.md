@@ -59,7 +59,7 @@ Replace every `<SLOT>`. If a slot is still in angle brackets, that claim FAILs �
 
 `CONSTRAINT`: `possibility` | `impossibility` | `fact` | `decision`.
 
-**Joins** (`person` | `org` | `work` | `place` | `concept` | `other`): names the claim is *about*, and the name **must appear in the CLAIM** (or as a compact variant: `JEPA` counts in `V-JEPA`). `grounding < 0.5` is garbage — check FAILs. `AT` / `@`: `file.py:12`, `t=3033`, or `p.1 ¶2`. Conversation-only concepts may omit AT, not the name. Never Python, never invent a JSON file, never reuse leftover example sentences.
+**Joins** (`person` | `org` | `work` | `place` | `concept` | `other`): names the claim is *about*. The name must be **attested** in the CLAIM: the string (or compact variant `JEPA` in `V-JEPA`), an `ALIAS:` that appears in the sentence, or the initials of a title-case phrase (`Joint Embedding Predictive Architecture` → `JEPA`). `grounding < 0.5` is garbage — check FAILs. Anaphora (`It predicts…`) is not attestation: rewrite so the name is in the sentence. A locator is not attestation. `AT` / `@`: `file.py:12`, `t=3033`, or `p.1 ¶2`. Conversation-only concepts may omit AT, not attestation. Never Python, never invent a JSON file, never reuse leftover example sentences.
 
 Shell flags still work (`--atom` / `--mention` / `--at`) if you can quote them. Draft is the small-model path.
 
