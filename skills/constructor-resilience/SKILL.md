@@ -12,7 +12,7 @@ license: AGPL-3.0-or-later
 compatibility: Requires Python 3.10+. First `bin/coherence` next to this file installs the CLI if needed.
 metadata:
   author: Rivlet
-  version: "0.1.3"
+  version: "0.1.4"
   homepage: https://github.com/rivletio/constructor-resilience-skill
   upstream: https://github.com/rivletio/constructor-resilience
 when-to-use: >
@@ -73,19 +73,22 @@ Same loop for **pack**, **intersect**, and **union**. Do not share while a check
 2. **Reason** — one sentence: missing join, bad locator, copied `<SLOT>`, quoted fragment, or does not constrain a possibility / impossibility / fact / decision.
 3. **Experiment** — `coherence reject N --reason "…"` then pack **one** replacement (draft or `--atom` / `--mention` / `--at`).
 
-**Overlap** (`intersect` ∩ or `union` ∪)
+**Overlap** (`intersect` ∩ or `union` ∪ — including a topic with itself)
 
 ```
-coherence intersect <mine> <theirs> --out /tmp/overlap.json
-coherence union <mine> <theirs> --out /tmp/union.json
-coherence check --packet /tmp/overlap.json
+coherence intersect <mine> <theirs> --out /tmp/o1.json
+coherence check --packet /tmp/o1.json
+# after reject / pack a replacement:
+coherence intersect <mine> <theirs> --out /tmp/o2.json --against /tmp/o1.json
 ```
 
-1. **Observe** — packet sources and printed **challenges** (mine vs theirs, or one-sided).
-2. **Reason** — does mine still hold given theirs (and vice versa)? `TENSION` = polarity conflict (treat as falsification, not corroboration). One-sided: still true without the other surface?
-3. **Experiment** — `coherence use` the originating topic, `reject` that `store_index` (or pack a revised claim that accounts for the other side), then re-run intersect/union.
+`intersect a a` is an audit: each atom vs the rest of the set (not vs its clone).
 
-Repeat. Same FAIL twice → simpler experiment (one CLAIM). Stop only when check is all PASS **and** every remaining atom still looks true — including given the other surface.
+1. **Observe** — **every** challenge on **every** atom (all contradictors are listed; none are dropped).
+2. **Reason** — does this atom still hold given each counterpart? `TENSION` = incompatible (check FAILs until resolved). `WEAK JOIN` = shared name, little claim overlap — if the claims are not actually about that name together, the mention is garbage. Support = they talk about the same thing.
+3. **Experiment** — `use` the originating topic, `reject` the falsified `store_index` (or pack a revised claim). Re-run overlap. **Compare** `--against` the previous packet: dropped / added / tension before→after.
+
+Repeat. Stop when check has no FAIL and no TENSION **and** `--against` reports the reconstructed set matches the previous one (fixed point). Same FAIL twice → simpler experiment (one CLAIM).
 
 FAIL is mechanical: too short, chat, copied template, quoted fragment, missing constraint/mentions, file mention without a line, YouTube mention without `t=`, citation in the sentence without `refs`. Overlap packets are strings: text FAILs plus challenges, not missing-constraint.
 
@@ -111,11 +114,12 @@ Give `topics/<id>/atoms.json` + `packet.json`, or `share.json`.
 
 ```bash
 coherence import ./their-atoms.json --title "Their surface" --use
-coherence intersect <mine> <theirs> --query "…" --max-size 8 --out /tmp/overlap.json
-coherence check --packet /tmp/overlap.json
+coherence intersect <mine> <theirs> --query "…" --max-size 8 --out /tmp/o1.json
+coherence check --packet /tmp/o1.json
+coherence intersect <mine> <theirs> --out /tmp/o2.json --against /tmp/o1.json
 ```
 
-`intersect --union` is the same as `union`. Then the loop above.
+`intersect --union` is the same as `union`. Self-audit: `intersect <id> <id>`. Then the loop above.
 
 ### Optional local MLX (Apple Silicon)
 
