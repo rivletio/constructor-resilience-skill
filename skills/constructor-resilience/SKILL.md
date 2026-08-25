@@ -12,7 +12,7 @@ license: AGPL-3.0-or-later
 compatibility: Requires Python 3.10+. First `bin/coherence` next to this file installs the CLI if needed.
 metadata:
   author: Rivlet
-  version: "0.1.7"
+  version: "0.1.8"
   homepage: https://github.com/rivletio/constructor-resilience-skill
   upstream: https://github.com/rivletio/constructor-resilience
 when-to-use: >
@@ -50,11 +50,13 @@ Write stand-alone claims from **this session** (do not copy sample names or path
 TITLE: <THEME>
 CONSTRAINT: fact
 CLAIM: <SENTENCE>
-MENTION: <NAME:kind> @ <file.py:LINE or t=SECONDS>
+AT: <t=SECONDS or file.py:LINE>
+MENTION: <NAME:kind>
+AT: <where that name occurred>
 ALIAS: <PHRASE THAT APPEARS IN THE CLAIM>
-CLAIM: <SENTENCE>
-MENTION: <NAME:kind> @ t=3033
 ```
+
+`AT` after `CLAIM` is **where the sentence occurred**. `AT` after `MENTION` is **where that name occurred** (can differ). Both travel on packet/share.
 
 Replace every `<SLOT>`. If a slot is still in angle brackets, that claim FAILs — rewrite from the session.
 
@@ -70,7 +72,7 @@ Replace every `<SLOT>`. If a slot is still in angle brackets, that claim FAILs �
 
 `It predicts…` + `MENTION: JEPA` is attested: packet/share keep that mention **on that claim**. Prefer the name in the sentence when easy; do not FAIL the pronoun if the join travels.
 
-`AT` / `@`: `file.py:12`, `t=3033`, or `p.1 ¶2`. Conversation-only concepts may omit AT, not attestation. Compact variants count (`JEPA` in `V-JEPA`). Never Python, never invent a JSON file, never reuse leftover example sentences.
+Locators: `file.py:12`, `t=3033`, `p.1 ¶2`. Conversation-only concepts may omit mention AT. Compact variants count (`JEPA` in `V-JEPA`). Never Python, never invent a JSON file, never reuse leftover example sentences.
 
 Shell flags still work (`--atom` / `--mention` / `--at`) if you can quote them. Draft is the small-model path.
 
