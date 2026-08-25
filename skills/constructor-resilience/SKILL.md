@@ -12,7 +12,7 @@ license: AGPL-3.0-or-later
 compatibility: Requires Python 3.10+. First `bin/coherence` next to this file installs the CLI if needed.
 metadata:
   author: Rivlet
-  version: "0.1.4"
+  version: "0.1.5"
   homepage: https://github.com/rivletio/constructor-resilience-skill
   upstream: https://github.com/rivletio/constructor-resilience
 when-to-use: >
@@ -59,7 +59,7 @@ Replace every `<SLOT>`. If a slot is still in angle brackets, that claim FAILs �
 
 `CONSTRAINT`: `possibility` | `impossibility` | `fact` | `decision`.
 
-**Joins** (`person` | `org` | `work` | `place` | `concept` | `other`): names the claim is *about*. `AT` / `@`: `file.py:12`, `t=3033`, or `p.1 ¶2`. Conversation-only concepts may omit AT. Never Python, never invent a JSON file, never reuse leftover example sentences.
+**Joins** (`person` | `org` | `work` | `place` | `concept` | `other`): names the claim is *about*, and the name **must appear in the CLAIM** (or as a compact variant: `JEPA` counts in `V-JEPA`). `grounding < 0.5` is garbage — check FAILs. `AT` / `@`: `file.py:12`, `t=3033`, or `p.1 ¶2`. Conversation-only concepts may omit AT, not the name. Never Python, never invent a JSON file, never reuse leftover example sentences.
 
 Shell flags still work (`--atom` / `--mention` / `--at`) if you can quote them. Draft is the small-model path.
 
@@ -85,12 +85,12 @@ coherence intersect <mine> <theirs> --out /tmp/o2.json --against /tmp/o1.json
 `intersect a a` is an audit: each atom vs the rest of the set (not vs its clone).
 
 1. **Observe** — **every** challenge on **every** atom (all contradictors are listed; none are dropped).
-2. **Reason** — does this atom still hold given each counterpart? `TENSION` = incompatible (check FAILs until resolved). `WEAK JOIN` = shared name, little claim overlap — if the claims are not actually about that name together, the mention is garbage. Support = they talk about the same thing.
+2. **Reason** — does this atom still hold given each counterpart? `TENSION` = incompatible (check FAILs until resolved). `GARBAGE JOIN` = shared name with `grounding < 0.5` (name not in the claim) — drop the tag. Support = claim-text overlap or a *grounded* shared name (`JEPA` in both sentences, or `JEPA`/`V-JEPA`).
 3. **Experiment** — `use` the originating topic, `reject` the falsified `store_index` (or pack a revised claim). Re-run overlap. **Compare** `--against` the previous packet: dropped / added / tension before→after.
 
 Repeat. Stop when check has no FAIL and no TENSION **and** `--against` reports the reconstructed set matches the previous one (fixed point). Same FAIL twice → simpler experiment (one CLAIM).
 
-FAIL is mechanical: too short, chat, copied template, quoted fragment, missing constraint/mentions, file mention without a line, YouTube mention without `t=`, citation in the sentence without `refs`. Overlap packets are strings: text FAILs plus challenges, not missing-constraint.
+FAIL is mechanical: too short, chat, copied template, quoted fragment, missing constraint/mentions, mention not grounded in the claim (`grounding < 0.5`), file mention without a line, YouTube mention without `t=`, citation in the sentence without `refs`. Overlap packets are strings: text FAILs plus challenges, not missing-constraint.
 
 Duplicates are skipped. `pack` / `ingest` / `add-atom` keep claims. MLX `mint` starts `pending`. `--pending` queues review.
 
