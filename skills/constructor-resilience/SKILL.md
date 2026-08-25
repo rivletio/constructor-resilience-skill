@@ -74,7 +74,7 @@ Replace every `<SLOT>`. If a slot is still in angle brackets, that claim FAILs �
 
 Locators: `file.py:12`, `t=3033`, `p.1 ¶2`. Conversation-only concepts may omit mention AT. Compact variants count (`JEPA` in `V-JEPA`). Never Python, never invent a JSON file, never reuse leftover example sentences.
 
-Shell flags still work (`--atom` / `--mention` / `--at`) if you can quote them. Draft is the small-model path.
+Shell flags still work (`--atom` / `--mention` / `--at`) if you can quote them. Draft is the small-model path. Numbered claims (`1 RWKV-7 Goose is…`) count as `CLAIM:` (tiny hosts often skip the label).
 
 ### Loop until quality
 
