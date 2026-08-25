@@ -12,7 +12,7 @@ license: AGPL-3.0-or-later
 compatibility: Requires Python 3.10+. First `bin/coherence` next to this file installs the CLI if needed.
 metadata:
   author: Rivlet
-  version: "0.1.6"
+  version: "0.1.7"
   homepage: https://github.com/rivletio/constructor-resilience-skill
   upstream: https://github.com/rivletio/constructor-resilience
 when-to-use: >
@@ -64,10 +64,11 @@ Replace every `<SLOT>`. If a slot is still in angle brackets, that claim FAILs �
 
 | FAIL | Experiment |
 |------|------------|
-| `anaphor:` (`It` / `the same`) | Rewrite the CLAIM so the name is in the sentence |
 | `not attested` | Put the name or `ALIAS:` in the sentence, **or drop the MENTION** |
 | title-case expansion | Initials count (`Joint Embedding Predictive Architecture` → `JEPA`) |
 | locator only | Does not attest — still name-in-sentence or drop |
+
+`It predicts…` + `MENTION: JEPA` is attested: packet/share keep that mention **on that claim**. Prefer the name in the sentence when easy; do not FAIL the pronoun if the join travels.
 
 `AT` / `@`: `file.py:12`, `t=3033`, or `p.1 ¶2`. Conversation-only concepts may omit AT, not attestation. Compact variants count (`JEPA` in `V-JEPA`). Never Python, never invent a JSON file, never reuse leftover example sentences.
 
@@ -100,7 +101,7 @@ coherence intersect <mine> <theirs> --out /tmp/o2.json --against /tmp/o1.json
 
 Repeat. Stop when check has no FAIL and no TENSION **and** `--against` reports the reconstructed set matches the previous one (fixed point). Same FAIL twice → simpler experiment (one CLAIM).
 
-FAIL is mechanical: too short, chat, copied template, quoted fragment, missing constraint/mentions, mention not attested (`anaphor:` → rewrite; `not attested` → name/ALIAS or drop), file mention without a line, YouTube mention without `t=`, citation in the sentence without `refs`. Overlap packets are strings: text FAILs plus challenges, not missing-constraint.
+FAIL is mechanical: too short, chat, copied template, quoted fragment, missing constraint/mentions, mention not attested (name/ALIAS in the sentence or drop), file mention without a line, YouTube mention without `t=`, citation in the sentence without `refs`. Overlap packets are strings: text FAILs plus challenges, not missing-constraint. Packet/share atoms carry mentions on each claim.
 
 Duplicates are skipped. `pack` / `ingest` / `add-atom` keep claims. MLX `mint` starts `pending`. `--pending` queues review.
 
