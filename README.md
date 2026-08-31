@@ -13,12 +13,6 @@ pick a model with `COHERENCE_MLX_MODEL`.
 npx skills add rivletio/constructor-resilience-skill
 ```
 
-`npx skills add` is the public install count ([skills.sh](https://skills.sh/rivletio/constructor-resilience-skill)). Git clones of this repo show up under GitHub Insights (unique cloners, last 14 days, owners). `coherence pack` does not phone home — claims stay local.
-
-```bash
-./scripts/usage.sh
-```
-
 Then say *pack this session* (or `/constructor-resilience`).
 
 If `coherence` is not on PATH, the agent should run `bin/coherence` next to
@@ -73,6 +67,7 @@ Protocol: [`skills/constructor-resilience/SKILL.md`](./skills/constructor-resili
 .
 ├── install.sh
 ├── cli.lock                 # pinned constructor-resilience git ref
+├── scripts/usage.sh         # clone + skills.sh counts (owners; pack does not report)
 ├── .claude-plugin/
 └── skills/constructor-resilience/
     ├── SKILL.md
