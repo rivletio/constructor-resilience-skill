@@ -1,11 +1,11 @@
 # constructor-resilience-skill
 
-An [Agent Skill](https://agentskills.io) so Claude, Grok, Codex, Cursor, and
-other hosts can **pack a session into durable claims** and a small resume
-packet — not a transcript.
+Host installer for [`constructor-resilience`](https://github.com/rivletio/constructor-resilience).
 
-Thin client of [`constructor-resilience`](https://github.com/rivletio/constructor-resilience)
-(`coherence` CLI).
+**Functions live there** (`coherence` / `coherence_cache`). This package only
+symlinks one `SKILL.md` into Grok, Claude, Codex, Cursor, and agents. It does
+not fork pack, check, lookup, or mint. Mint models share `mlx_backend.generate`;
+pick a model with `COHERENCE_MLX_MODEL`.
 
 ## Install
 

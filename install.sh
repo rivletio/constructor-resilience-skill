@@ -36,7 +36,14 @@ while [[ $# -gt 0 ]]; do
 done
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-SKILL_SRC="$ROOT/skills/constructor-resilience"
+# Functions and SKILL.md live in constructor-resilience. This package only
+# links hosts (Grok, Claude, Codex, Cursor) at that one directory.
+SIBLING_CLI="${CONSTRUCTOR_RESILIENCE_HOME:-$ROOT/../constructor-resilience}"
+if [[ -f "$SIBLING_CLI/skills/constructor-resilience/SKILL.md" ]]; then
+  SKILL_SRC="$(cd "$SIBLING_CLI/skills/constructor-resilience" && pwd)"
+else
+  SKILL_SRC="$ROOT/skills/constructor-resilience"
+fi
 LOCK="$ROOT/cli.lock"
 if [[ ! -f "$SKILL_SRC/SKILL.md" ]]; then
   echo "Missing $SKILL_SRC/SKILL.md" >&2
