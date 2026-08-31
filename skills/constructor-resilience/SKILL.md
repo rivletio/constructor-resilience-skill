@@ -4,15 +4,17 @@ description: >
   Pack a session into durable claims and a small resume packet. Use when
   digesting research, handing off between agents, sharing what was decided
   (not the transcript), attaching names and citations to claims, checking
-  whether a claim still holds, or overlapping two interest surfaces
-  (intersection or union). Triggers: pack this session, digest this,
-  handoff, share claims, coherence cache, atoms, ingest, mint, packet,
-  constructor resilience, interest intersection, union, challenge atom.
+  whether a claim still holds, overlapping two interest surfaces
+  (intersection or union), or looking up a question over a union
+  (possible/impossible pairs, atoms still in question). Triggers: pack this
+  session, digest this, handoff, share claims, coherence cache, atoms,
+  ingest, mint, packet, constructor resilience, interest intersection,
+  union, lookup, challenge atom.
 license: AGPL-3.0-or-later
 compatibility: Requires Python 3.10+. First `bin/coherence` next to this file installs the CLI if needed.
 metadata:
   author: Rivlet
-  version: "0.1.8"
+  version: "0.1.10"
   homepage: https://github.com/rivletio/constructor-resilience-skill
   upstream: https://github.com/rivletio/constructor-resilience
 when-to-use: >
@@ -98,12 +100,12 @@ coherence intersect <mine> <theirs> --out /tmp/o2.json --against /tmp/o1.json
 `intersect a a` is an audit: each atom vs the rest of the set (not vs its clone).
 
 1. **Observe** — **every** challenge on **every** atom (all contradictors are listed; none are dropped).
-2. **Reason** — does this atom still hold given each counterpart? `TENSION` = incompatible (check FAILs until resolved). `GARBAGE JOIN` = shared name with `grounding < 0.5` (name not in the claim) — drop the tag. Support = claim-text overlap or a *grounded* shared name (`JEPA` in both sentences, or `JEPA`/`V-JEPA`).
+2. **Reason** — does this atom still hold given each counterpart? `TENSION` = incompatible (check FAILs until resolved). `GARBAGE JOIN` = shared name with `grounding < 0.5` (name not in the claim) — drop the tag. Support = claim-text overlap. `JOIN` = grounded shared name with thin content (one per atom; a common paper is not a cartesian of belief checks).
 3. **Experiment** — `use` the originating topic, `reject` the falsified `store_index` (or pack a revised claim). Re-run overlap. **Compare** `--against` the previous packet: dropped / added / tension before→after.
 
 Repeat. Stop when check has no FAIL and no TENSION **and** `--against` reports the reconstructed set matches the previous one (fixed point). Same FAIL twice → simpler experiment (one CLAIM).
 
-FAIL is mechanical: too short, chat, copied template, quoted fragment, missing constraint/mentions, mention not attested (name/ALIAS in the sentence or drop), file mention without a line, YouTube mention without `t=`, citation in the sentence without `refs`. Overlap packets are strings: text FAILs plus challenges, not missing-constraint. Packet/share atoms carry mentions on each claim.
+FAIL is mechanical: too short, chat, copied template, quoted fragment, missing constraint/mentions, mention not attested (name/ALIAS in the sentence or drop), file mention without a line, YouTube mention without `t=`, citation in the sentence without `refs`. Overlap packets carry traveling claims (text plus mentions/refs/constraint). `check --packet` on ∩/∪ uses text FAILs plus challenges, not missing-constraint. Packet/share atoms carry mentions on each claim.
 
 Duplicates are skipped. `pack` / `ingest` / `add-atom` keep claims. MLX `mint` starts `pending`. `--pending` queues review.
 
@@ -133,6 +135,15 @@ coherence intersect <mine> <theirs> --out /tmp/o2.json --against /tmp/o1.json
 ```
 
 `intersect --union` is the same as `union`. Self-audit: `intersect <id> <id>`. Then the loop above.
+
+**Lookup (fast, no model)** over the full ∪ of two topics, or an overlap file:
+
+```
+coherence lookup "the question in natural language" --mine <id> --theirs <id>
+coherence lookup "the question" --packet /tmp/o1.json
+```
+
+Hits are query-ranked atoms. `polarity` is possible × impossible on a shared join. `question` is pending, tension, or a constructor (possibility/impossibility) still to evaluate.
 
 ### Optional local MLX (Apple Silicon)
 
