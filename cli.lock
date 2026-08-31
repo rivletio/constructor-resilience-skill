@@ -1,4 +1,4 @@
 # Pin for install.sh — constructor-resilience CLI
 repo=https://github.com/rivletio/constructor-resilience.git
-ref=42c1709f41c872909b83233a178383a361d7c6b2
+ref=32ff2d161e24e7db462e83285e43e76287fcd648
 version=0.1.4
