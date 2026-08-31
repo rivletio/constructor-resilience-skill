@@ -14,12 +14,13 @@ license: AGPL-3.0-or-later
 compatibility: Requires Python 3.10+. First `bin/coherence` next to this file installs the CLI if needed.
 metadata:
   author: Rivlet
-  version: "0.1.10"
+  version: "0.1.11"
   homepage: https://github.com/rivletio/constructor-resilience-skill
   upstream: https://github.com/rivletio/constructor-resilience
 when-to-use: >
   pack this session, digest this into claims, handoff, share what we
-  decided, cache this research
+  decided, cache this research, lookup over a union, intersect, challenge
+  atoms in question
 ---
 
 # Constructor Resilience
@@ -52,7 +53,7 @@ Write stand-alone claims from **this session** (do not copy sample names or path
 TITLE: <THEME>
 CONSTRAINT: fact
 CLAIM: <SENTENCE>
-AT: <t=SECONDS or file.py:LINE>
+AT: <t=SECONDS or path:LINE>
 MENTION: <NAME:kind>
 AT: <where that name occurred>
 ALIAS: <PHRASE THAT APPEARS IN THE CLAIM>
@@ -69,14 +70,14 @@ Replace every `<SLOT>`. If a slot is still in angle brackets, that claim FAILs �
 | FAIL | Experiment |
 |------|------------|
 | `not attested` | Put the name or `ALIAS:` in the sentence, **or drop the MENTION** |
-| title-case expansion | Initials count (`Joint Embedding Predictive Architecture` → `JEPA`) |
+| title-case expansion | Initials of a title-case phrase in the claim count as the name |
 | locator only | Does not attest — still name-in-sentence or drop |
 
-`It predicts…` + `MENTION: JEPA` is attested: packet/share keep that mention **on that claim**. Prefer the name in the sentence when easy; do not FAIL the pronoun if the join travels.
+`It predicts…` + `MENTION: <NAME>` is attested: packet/share keep that mention **on that claim**. Prefer the name in the sentence when easy; do not FAIL the pronoun if the join travels.
 
-Locators: `file.py:12`, `t=3033`, `p.1 ¶2`. Conversation-only concepts may omit mention AT. Compact variants count (`JEPA` in `V-JEPA`). Never Python, never invent a JSON file, never reuse leftover example sentences.
+Locators: `path:LINE`, `t=SECONDS`, `p.N ¶M`. Conversation-only concepts may omit mention AT. Compact variants count (hyphens/spaces dropped). Never Python, never invent a JSON file, never reuse leftover example sentences.
 
-Shell flags still work (`--atom` / `--mention` / `--at`) if you can quote them. Draft is the small-model path. Numbered claims (`1 RWKV-7 Goose is…`) count as `CLAIM:` (tiny hosts often skip the label).
+Shell flags still work (`--atom` / `--mention` / `--at`) if you can quote them. Draft is the small-model path. Numbered claims (`1 <SENTENCE>`) count as `CLAIM:` (tiny hosts often skip the label).
 
 ### Loop until quality
 
@@ -139,8 +140,8 @@ coherence intersect <mine> <theirs> --out /tmp/o2.json --against /tmp/o1.json
 **Lookup (fast, no model)** over the full ∪ of two topics, or an overlap file:
 
 ```
-coherence lookup "the question in natural language" --mine <id> --theirs <id>
-coherence lookup "the question" --packet /tmp/o1.json
+coherence lookup "<QUESTION>" --mine <id> --theirs <id>
+coherence lookup "<QUESTION>" --packet /tmp/o1.json
 ```
 
 Hits are query-ranked atoms. `polarity` is possible × impossible on a shared join. `question` is pending, tension, or a constructor (possibility/impossibility) still to evaluate.

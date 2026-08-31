@@ -51,10 +51,11 @@ the CLI exists.
 ## What the agent does
 
 1. Resume: `coherence cache "theme"` and read the packet (if CACHE MISS, pack).
-2. Pack durable claims: `coherence pack --title "theme" --atom "Claim one." --atom "Claim two."`.
-3. Loop until quality (observe / reason / experiment) on pack **and** on `intersect` / `union` — challenge whether an atom still holds given the other surface.
-4. Back out claims that do not actually constrain a possibility or impossibility.
-5. Hand off: `coherence share --to <id>`.
+2. Pack durable claims from **this session** (`coherence pack --draft`). Do not copy leftover example sentences.
+3. Loop until quality (observe / reason / experiment) on pack **and** on `intersect` / `union`. `JOIN` is a shared name, not a cartesian of belief checks.
+4. Lookup over a union: `coherence lookup "<QUESTION>" --mine <id> --theirs <id>` — hits, possible × impossible, atoms still in question.
+5. Back out claims that do not actually constrain a possibility or impossibility.
+6. Hand off: `coherence share --to <id>`.
 
 Share `atoms.json` + `packet.json` (or `share.json`) — not the chat log.
 
